@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.woniu.h_dynamicsql.UserMapper">
+
+	<!-- where标签：
+		当where里有内容的时候，会生成where单词，也会删除它下一个 and/or 单词
+		当where里没有内容的时候，就啥也不生成
+	 -->
+	<select id="find" parameterType="UserExample" resultType="User">
+		SELECT * FROM user
+		<where>
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="name != null">
+				and name = #{name}
+			</if>
+			<!-- <if test="maxId != null">
+				and id &lt; #{maxid}
+			</if> -->
+			<!-- 这里的CDATA(character data)代表字符数据
+			在这里面写的都不会被xml解析，会被当成字符串 -->
+			<if test="maxId != null">
+				<![CDATA[
+					and id < #{maxId}
+				]]>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 这里的choose、when、otherwise相当于Java的switch -->
+	<select id="find2" parameterType="UserExample" resultType="User">
+		SELECT * FROM user
+		<where>
+			<choose>
+				<when test="id != null">
+					and id = #{id}
+				</when>
+				<when test="name != null">
+					and name = #{name}
+				</when>
+				<when test="maxId != null">
+					and maxId = #{maxId}
+				</when>
+				<otherwise>
+					and 1 = 1
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<!-- foreach标签：
+		collection：要遍历的集合
+		item：把集合中的每一个元素用一个词表示出来
+		separator：以什么分隔
+		open：以什么开始
+		close：以什么结束
+	 -->
+	<select id="find3" parameterType="UserExample" resultType="User">
+		SELECT * FROM user 
+		<where>
+			<foreach collection="ids" item="id" separator="," open="id in(" close=")">
+				#{id}
+			</foreach>
+		</where>
+	</select>
+	
+	<!-- set标签：
+			当set里有内容的时候，会生成一个set单词，也会删出最后一个“,”号
+			当set里没有内容的时候，就啥也没有生成
+	 -->
+	<select id="update" parameterType="User">
+		UPDATE user
+		<set>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday},
+			</if>
+			<if test="money != null">
+				money = #{money},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</select>
+	
+	<!-- trim标签：
+			prefix：在trim标签开始前加的字符
+			prefixOverrides：替换掉trim标签内第一个字符为空格
+			suffix：在trim标签结束后加的字符
+			suffixOverides：替换掉trim标签内最后一个字符为空格
+	 -->
+	<select id="update2" parameterType="User">
+		UPDATE user 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday},
+			</if>
+			<if test="money != null">
+				money = #{money},
+			</if>
+		</trim>
+		WHERE id = #{id}
+	</select>
+	
+	<!-- sql标签：
+			id：用来作为<include refid="aa"></include>refid的参数
+			sql标签里面可以写sql语句，也可以写各种标签
+		include标签：用来引入别的sql标签	
+	 -->
+	<sql id="aa">
+		SELECT * FROM user
+	</sql>
+	
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.woniu.f_one2many.StuMapper">
+	<select id="findOne" parameterType="int" resultMap="rm">
+		SELECT * FROM stu s JOIN clazz c
+		ON s.cid = c.cid
+		WHERE s.sid = #{sid}
+	</select>
+	<resultMap type="Stu" id="rm">
+		<id property="sid" column="sid"/>
+		<result property="sname" column="sname"/>
+		<association property="clazz" javaType="Clazz">
+			<id property="cid" column="cid"/>
+			<result property="cname" column="cname"/>
+		</association>
+	</resultMap>
+</mapper>

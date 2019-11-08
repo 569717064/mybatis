@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.woniu.l_id_tactics.BookMapper">
+	<insert id="save" parameterType="Book">
+		<!-- 这个表的主键是string类型，所以mysql数据库不支持自增，所以需要我们手动加主键，
+			通常使用UUID()作为主键
+			<selectKey>:选择此标签内生成的key，根据KeyProperty传给后面的sql语句
+				KeyProperty:这里的属性用来截胡参数传进来的bid
+				order:这是让selectKey标签里的代码在sql语句之前执行
+				
+			REPLACE(UUID(),'-','@'):可以替换UUID里面的“-”为任何想要的符号
+		 -->
+		<selectKey keyProperty="bid" resultType="string" order="BEFORE">
+			select REPLACE(UUID(),'-','@')
+		</selectKey>
+		insert into book values(#{bid},#{bname})
+	</insert>
+</mapper>
